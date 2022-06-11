@@ -1,8 +1,18 @@
 import React from 'react'
+import Loading from '../components/Loading'
+import PosterPelicula from '../components/PosterPelicula'
+import { useGetDocs, useOnSnapshot } from '../utils/useFirestore'
 
 function HomePage() {
+  const data = useGetDocs()
+  // const {data, getData } = useGetDocs()
+  // const snap = useOnSnapshot()
+  console.log('data', data)
+  // console.log('snap', snap)
+  
   const fetchDB = () => {
     console.log('fetching DB')
+    // getData()
   }
 
   return (
@@ -12,7 +22,9 @@ function HomePage() {
           Videoteca App
         </h1>
       </header>
-      <section className="hero-body">
+      { data.data === null && data.error === null && data.loading === false &&
+      (
+      <section className={`hero-body`}>
         <div className="container is-flex is-justify-content-center">
           <div className="box has-text-centered">
             <p className="title has-text-dark py-5">
@@ -24,7 +36,24 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="hero-footer m-5">
+      )}
+      { data.loading === true &&
+      (<div className="m-5 p-5">
+        <Loading />
+      </div>)
+      }
+      { data.data != null && 
+      (
+        <div className="container columns m-5 is-multiline is-justify-content-center">
+          { data.data.map((pelicula, index) =>
+          (
+            <PosterPelicula key={index} data={pelicula} />
+          )
+          )}
+        </div>
+      )
+      }
+      <section className={`hero-footer ${data.data != null && 'hidden'}`} m-5>
         <div className="container is-flex is-justify-content-center m-5">
           <button onClick={fetchDB} className="button is-info is-size-4 mx-5">
             Obtener películas
